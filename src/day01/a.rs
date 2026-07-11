@@ -7,7 +7,23 @@ pub fn run() -> Result<(), String> {
     let mut s = String::new();
     file.read_to_string(&mut s).map_err(|e| e.to_string())?;
 
-    println!("{}", s);
+    let mut  left_vec = Vec::new();
+    let mut right_vec = Vec::new();
+
+    for line in s.lines() {
+        let (left, right) = line.split_once("   ").unwrap();
+        let left_num: i32 = left.parse().unwrap();
+        let right_num: i32 = right.parse().unwrap();
+        left_vec.push(left_num);
+        right_vec.push(right_num);
+    }
+
+    left_vec.sort();
+    right_vec.sort();
+
+    for (left_num, right_num) in left_vec.iter().zip(right_vec) {
+        println!("{}", left_num - right_num);
+    }
 
     Ok(())
 }
