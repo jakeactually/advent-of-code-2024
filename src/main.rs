@@ -1,6 +1,7 @@
 use std::env;
 
 mod day01;
+mod scaffold;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -8,6 +9,7 @@ fn main() {
     let part = args[2].as_str();
 
     let res = match (day, part) {
+        ("day", other) => scaffold::scaffold_day(other),
         ("01", "a") => day01::a::run(),
         ("01", "b") => day01::b::run(),
         _ => Err("Unknown day or part".to_string()),
