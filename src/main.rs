@@ -9,6 +9,7 @@ fn main() {
 
     let res = match (day, part) {
         ("01", "a") => day01::a::run(),
+        ("01", "b") => day01::b::run(),
         _ => Err("Unknown day or part".to_string()),
     };
 
