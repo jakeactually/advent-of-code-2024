@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 const TEMPLATE: &str = r#"
 use std::fs::File;
@@ -45,6 +46,23 @@ fn scaffold_dir(root: &Path, day_number: &str) -> Result<(), String> {
             fs::write(file_path, content).map_err(|e| e.to_string())?;
         }
     }
+
+    let update_main = r#"
+        anchors=$(grep -nE 'scaffold|Unknown' src/main.rs)
+
+        scaffold_line=$(echo "$anchors" | grep 'scaffold;' | cut -d: -f1)
+        sed -i "${scaffold_line}i mod day04;" src/main.rs
+
+        unknown_line=$(echo "$anchors" | grep 'Unknown' | cut -d: -f1)
+        sed -i "$((unknown_line + 1))i\\        (\"04\", \"a\") => day04::a::run()," src/main.rs
+        sed -i "$((unknown_line + 2))i\\        (\"04\", \"b\") => day04::b::run()," src/main.rs
+    "#;
+
+    Command::new("bash")
+        .arg("-c")
+        .arg(update_main.replace("04", day_number))
+        .status()
+        .map_err(|e| e.to_string())?;
 
     Ok(())
 }
