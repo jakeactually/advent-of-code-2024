@@ -3,6 +3,7 @@ use std::env;
 mod day01;
 mod day02;
 mod day03;
+mod day04;
 mod scaffold;
 
 fn main() {
@@ -18,6 +19,8 @@ fn main() {
         ("02", "b") => day02::b::run(),
         ("03", "a") => day03::a::run(),
         ("03", "b") => day03::b::run(),
+        ("04", "a") => day04::a::run(),
+        ("04", "b") => day04::b::run(),
         _ => Err("Unknown day or part".to_string()),
     };
 
