@@ -20,33 +20,25 @@ fn is_in_grid_with_value(grid: &Vec<Vec<char>>, bounds: (i32, i32), position: (i
         && grid[position.1 as usize][position.0 as usize] == value
 }
 
-pub fn look_for_word(grid: &Vec<Vec<char>>, bounds: (i32, i32), start: (i32, i32)) -> i32  {
+pub fn look_for_word(grid: &Vec<Vec<char>>, bounds: (i32, i32), start: (i32, i32)) -> i32  {        
     let mut amount = 0;
 
-    if !is_in_grid_with_value(grid, bounds, start, 'X') {
-        return amount;
-    }
-
     for dir in DIRECTIONS.iter() {
-        let (mut cx, mut cy) = (start.0 + dir.0, start.1 + dir.1);
+        let (mut cx, mut cy) = (start.0, start.1);
+        let mut valid = true;
 
-        if !is_in_grid_with_value(grid, bounds, (cx, cy), 'M') {
-            continue;
+        for letter in "XMAS".chars() {
+            if !is_in_grid_with_value(grid, bounds, (cx, cy), letter) {
+                valid = false;
+                break;
+            }
+
+            (cx, cy) = (cx + dir.0, cy + dir.1);
         }
 
-        (cx, cy) = (cx + dir.0, cy + dir.1);
-
-        if !is_in_grid_with_value(grid, bounds, (cx, cy), 'A') {
-            continue;
+        if valid {
+            amount += 1;
         }
-
-        (cx, cy) = (cx + dir.0, cy + dir.1);
-
-        if !is_in_grid_with_value(grid, bounds, (cx, cy), 'S') {
-            continue;
-        }
-
-        amount += 1;
     }
 
     return amount;
@@ -57,12 +49,9 @@ pub fn run() -> Result<(), String> {
     let mut text = String::new();
     file.read_to_string(&mut text).map_err(|e| e.to_string())?;
 
-
     let grid: Vec<Vec<char>> = text.lines().map(|x| x.chars().collect()).collect();
-
     let height = grid.len() as i32;
     let width = grid[0].len() as i32;
-
     let mut count = 0;
 
     for y in 0..height {
