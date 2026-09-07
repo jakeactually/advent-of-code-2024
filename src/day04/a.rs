@@ -12,29 +12,37 @@ const DIRECTIONS: [(i32, i32); 8] = [
     (1, 1),
 ];
 
+fn is_in_grid_with_value(grid: &Vec<Vec<char>>, bounds: (i32, i32), position: (i32, i32), value: char) -> bool {
+    bounds.0 > position.0
+        && position.0 >= 0
+        && bounds.1 > position.1
+        && position.1 >= 0
+        && grid[position.1 as usize][position.0 as usize] == value
+}
+
 pub fn look_for_word(grid: &Vec<Vec<char>>, bounds: (i32, i32), start: (i32, i32)) -> i32  {
     let mut amount = 0;
 
-    if !(0..bounds.0).contains(&start.0) || !(0..bounds.1).contains(&start.1) || grid[start.1 as usize][start.0 as usize] != 'X' {
+    if !is_in_grid_with_value(grid, bounds, start, 'X') {
         return amount;
     }
 
     for dir in DIRECTIONS.iter() {
         let (mut cx, mut cy) = (start.0 + dir.0, start.1 + dir.1);
 
-        if !(0..bounds.0).contains(&cx) || !(0..bounds.1).contains(&cy) || grid[cy as usize][cx as usize] != 'M' {
+        if !is_in_grid_with_value(grid, bounds, (cx, cy), 'M') {
             continue;
         }
 
         (cx, cy) = (cx + dir.0, cy + dir.1);
 
-        if !(0..bounds.0).contains(&cx) || !(0..bounds.1).contains(&cy) || grid[cy as usize][cx as usize] != 'A' {
+        if !is_in_grid_with_value(grid, bounds, (cx, cy), 'A') {
             continue;
         }
 
         (cx, cy) = (cx + dir.0, cy + dir.1);
 
-        if !(0..bounds.0).contains(&cx) || !(0..bounds.1).contains(&cy) || grid[cy as usize][cx as usize] != 'S' {
+        if !is_in_grid_with_value(grid, bounds, (cx, cy), 'S') {
             continue;
         }
 
