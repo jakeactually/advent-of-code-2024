@@ -2,6 +2,23 @@ use std::collections::HashSet;
 use std::fs::File;
 use std::io::prelude::*;
 
+fn bubble_sort(pages: &mut [&str], tuples: &HashSet<(&str, &str)>) {
+    for end in (1..pages.len()).rev() {
+        let mut swapped = false;
+
+        for i in 0..end {
+            if tuples.contains(&(pages[i + 1], pages[i])) {
+                pages.swap(i, i + 1);
+                swapped = true;
+            }
+        }
+
+        if !swapped {
+            break;
+        }
+    }
+}
+
 pub fn run() -> Result<(), String> {
     let mut file = File::open("src/day05/input.txt").map_err(|e| e.to_string())?;
     let mut text = String::new();
@@ -17,7 +34,7 @@ pub fn run() -> Result<(), String> {
     let mut total = 0;
 
     for page_str in pages_str.lines() {
-        let pages = page_str.split(",").collect::<Vec<_>>();
+        let mut pages = page_str.split(",").collect::<Vec<_>>();
         let mut valid = true;
 
         for i in 0..pages.len() {
@@ -28,12 +45,13 @@ pub fn run() -> Result<(), String> {
             }
         }
 
-        if valid {
+        if !valid {
+            bubble_sort(&mut pages, &tuples);
             total += pages[pages.len() / 2].parse::<i32>().unwrap();
         }
     }
 
     println!("{}", total);
-    
+
     Ok(())
 }
