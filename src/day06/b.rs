@@ -9,12 +9,42 @@ const DIRECTIONS: [(i32, i32); 4] = [
     (-1, 0),
 ];
 
+fn has_loop(grid: Vec<Vec<char>>, start: (i32, i32), (width, height): (i32, i32)) -> bool {
+    let mut current = start;
+    let mut current_direction = 0;
+    let mut visited = HashSet::new();
+
+    loop {
+        let delta = DIRECTIONS[current_direction];
+
+        loop {
+            let next = (current.0 + delta.0, current.1 + delta.1);
+
+            if visited.contains(&(next, current_direction)) {
+                return true;
+            }
+
+            if (0..width).contains(&next.0) && (0..height).contains(&next.1) {
+                if grid[next.1 as usize][next.0 as usize] == '#' {
+                    current_direction = (current_direction + 1) % 4;
+                    break;
+                }
+            } else {
+                return false;
+            }
+
+            visited.insert((current, current_direction));
+            current = next;
+        }
+    }
+}
+
 pub fn run() -> Result<(), String> {
     let mut file = File::open("src/day06/input.txt").map_err(|e| e.to_string())?;
     let mut text = String::new();
     file.read_to_string(&mut text).map_err(|e| e.to_string())?;
     
-    let grid: Vec<Vec<char>> = text.lines().map(|x| x.chars().collect()).collect();
+    let mut grid: Vec<Vec<char>> = text.lines().map(|x| x.chars().collect()).collect();
     let height = grid.len() as i32;
     let width = grid[0].len() as i32; 
 
@@ -28,32 +58,14 @@ pub fn run() -> Result<(), String> {
         }
     }
 
-    let mut current_direction = 0;
-    let mut visited = HashSet::new();
+    grid[start.1 as usize][start.0 as usize] = '.';
 
-    'outside:
-    loop {
-        let delta = DIRECTIONS[current_direction];
-
-        loop {
-            let next = (start.0 + delta.0, start.1 + delta.1);
+    grid[start.1 as usize][start.0 as usize - 1] = '#';
 
 
-            if (0..width).contains(&next.0) && (0..height).contains(&next.1) {
-                if grid[next.1 as usize][next.0 as usize] == '#' {
-                    current_direction = (current_direction + 1) % 4;
-                    break;
-                }
-            } else {
-                break 'outside;
-            }
+    let is_loop = has_loop(grid, start, (width, height));
 
-            visited.insert(start);
-            start = next;
-        }
-    }
-
-    println!("{}", visited.len() + 1);
+    println!("{}", is_loop);
 
     Ok(())
 }
