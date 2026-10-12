@@ -31,13 +31,13 @@ pub fn run() -> Result<(), String> {
     let mut current_direction = 0;
     let mut visited = HashSet::new();
 
-    while (0..width).contains(&start.0) && (0..height).contains(&start.1) {
+    'outside:
+    loop {
         let delta = DIRECTIONS[current_direction];
 
         loop {
             let next = (start.0 + delta.0, start.1 + delta.1);
 
-            dbg!(next);
 
             if (0..width).contains(&next.0) && (0..height).contains(&next.1) {
                 if grid[next.1 as usize][next.0 as usize] == '#' {
@@ -45,8 +45,7 @@ pub fn run() -> Result<(), String> {
                     break;
                 }
             } else {
-                start = next;
-                break;
+                break 'outside;
             }
 
             visited.insert(start);
