@@ -18,14 +18,15 @@ fn has_loop(grid: Vec<Vec<char>>, start: (i32, i32), (width, height): (i32, i32)
         let delta = DIRECTIONS[current_direction];
 
         loop {
-            let next = (current.0 + delta.0, current.1 + delta.1);
+            let next = (current.0 + delta.0, current.1 + delta.1);            
 
-            if visited.contains(&(next, current_direction)) {
+            if visited.contains(&(next, current_direction)) {                
                 return true;
             }
 
             if (0..width).contains(&next.0) && (0..height).contains(&next.1) {
                 if grid[next.1 as usize][next.0 as usize] == '#' {
+                    visited.insert((current, current_direction));
                     current_direction = (current_direction + 1) % 4;
                     break;
                 }
@@ -59,13 +60,20 @@ pub fn run() -> Result<(), String> {
     }
 
     grid[start.1 as usize][start.0 as usize] = '.';
+    let mut count = 0;
 
-    grid[start.1 as usize][start.0 as usize - 1] = '#';
+    for y in 0..height {
+        for x in 0..width {
+            let mut grid_clone = grid.clone();
+            grid_clone[y as usize][x as usize] = '#';
 
+            if has_loop(grid_clone, start, (width, height)) {
+                count += 1;
+            }
+        }
+    }
 
-    let is_loop = has_loop(grid, start, (width, height));
-
-    println!("{}", is_loop);
+    println!("{}", count);
 
     Ok(())
 }
