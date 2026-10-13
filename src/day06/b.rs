@@ -24,18 +24,18 @@ fn has_loop(grid: Vec<Vec<char>>, start: (i32, i32), (width, height): (i32, i32)
                 return true;
             }
 
-            if (0..width).contains(&next.0) && (0..height).contains(&next.1) {
-                if grid[next.1 as usize][next.0 as usize] == '#' {
-                    visited.insert((current, current_direction));
-                    current_direction = (current_direction + 1) % 4;
-                    break;
-                }
-            } else {
+            if !(0..width).contains(&next.0) || !(0..height).contains(&next.1) {                
                 return false;
             }
 
             visited.insert((current, current_direction));
-            current = next;
+
+            if grid[next.1 as usize][next.0 as usize] == '#' {
+                current_direction = (current_direction + 1) % 4;
+                break;
+            } else {
+                current = next;
+            }
         }
     }
 }
