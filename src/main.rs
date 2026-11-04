@@ -6,6 +6,7 @@ mod day03;
 mod day04;
 mod day05;
 mod day06;
+mod day07;
 mod scaffold;
 
 fn main() {
@@ -27,6 +28,8 @@ fn main() {
         ("05", "b") => day05::b::run(),
         ("06", "a") => day06::a::run(),
         ("06", "b") => day06::b::run(),
+        ("07", "a") => day07::a::run(),
+        ("07", "b") => day07::b::run(),
         _ => Err("Unknown day or part".to_string()),
     };
 
