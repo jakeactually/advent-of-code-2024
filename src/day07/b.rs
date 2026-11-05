@@ -1,6 +1,12 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+fn drop_two_add_one(vec: &Vec<u64>, value: u64) -> Vec<u64> {
+    let mut new_vec = vec[0..vec.len() - 2].to_vec();
+    new_vec.push(value);
+    return new_vec;
+}
+
 fn nearest_power_of_ten(n: u64) -> u64 {
     let mut result = 10;
 
@@ -26,26 +32,14 @@ fn backtrack(acc: Vec<u64>) -> bool {
     }
 
     let difference = last - second_to_last;
-    let mut addition_vec = acc[0..acc.len() - 2].to_vec();
-    addition_vec.push(difference);
-    let addition = backtrack(addition_vec);
+    let addition = backtrack(drop_two_add_one(&acc, difference));
 
-    let multiplication = if last % second_to_last == 0 {
-        let dividend = last / second_to_last;
-        let mut multiplication_vec = acc[0..acc.len() - 2].to_vec();
-        multiplication_vec.push(dividend);
-        backtrack(multiplication_vec) 
-    } else {
-        false     
-    };
+    let multiplication_vec = drop_two_add_one(&acc, last / second_to_last);
+    let multiplication = last % second_to_last == 0 && backtrack(multiplication_vec);
 
-    let concatenation = if difference % nearest_power_of_ten(second_to_last) == 0 {
-        let mut concatenation_vec = acc[0..acc.len() - 2].to_vec();
-        concatenation_vec.push(difference / nearest_power_of_ten(second_to_last));
-        backtrack(concatenation_vec)
-    } else {
-        false
-    };
+    let power_of_ten = nearest_power_of_ten(second_to_last);
+    let concatenation_vec = drop_two_add_one(&acc, difference / power_of_ten);
+    let concatenation = difference % power_of_ten == 0 && backtrack(concatenation_vec);
 
     return addition || multiplication || concatenation;
 }
