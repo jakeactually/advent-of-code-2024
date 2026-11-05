@@ -1,6 +1,18 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+fn nearest_power_of_ten(n: u64) -> u64 {
+    let mut result = 10;
+
+    loop {
+        if result > n {
+            return result;
+        }
+
+        result *= 10;
+    }
+}
+
 fn backtrack(acc: Vec<u64>) -> bool {
     if acc.len() == 2 {
         return acc[0] == acc[1];
@@ -18,15 +30,24 @@ fn backtrack(acc: Vec<u64>) -> bool {
     addition_vec.push(difference);
     let addition = backtrack(addition_vec);
 
-    if last % second_to_last != 0 {
-        return addition;
-    } else {
+    let multiplication = if last % second_to_last == 0 {
         let dividend = last / second_to_last;
         let mut multiplication_vec = acc[0..acc.len() - 2].to_vec();
         multiplication_vec.push(dividend);
-        let multiplication = backtrack(multiplication_vec);
-        return addition || multiplication;
-    }
+        backtrack(multiplication_vec) 
+    } else {
+        false     
+    };
+
+    let concatenation = if difference % nearest_power_of_ten(second_to_last) == 0 {
+        let mut concatenation_vec = acc[0..acc.len() - 2].to_vec();
+        concatenation_vec.push(difference / nearest_power_of_ten(second_to_last));
+        backtrack(concatenation_vec)
+    } else {
+        false
+    };
+
+    return addition || multiplication || concatenation;
 }
 
 pub fn run() -> Result<(), String> {
